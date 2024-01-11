@@ -27,3 +27,7 @@ data_ethnie <- data_pop %>%
 
 print("data charged")
 
+
+
+#####pour l'ui apres le dashboard
+# shinythemes::themeSelector(),
