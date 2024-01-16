@@ -81,21 +81,22 @@ ui <- dashboardPage(
   ),
   body
 )
-
+# Serveur
 server <- function(input, output) {
   
+  my_data <- data()
   
    output$tableau <- renderDataTable({
-     data()
+     my_data()
    })
 
 output$SummaryData <- renderPrint({
-     summary(data())
+     summary(my_data())
     })
 }
 
 # Prévisualisation de l'UI dans la console
-shinyApp(ui = ui, server = function(input, output) { })
+shinyApp(ui = ui, server = server)
 
 
 ##############################################################################
