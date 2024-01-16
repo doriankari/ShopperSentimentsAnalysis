@@ -1,77 +1,222 @@
 source("packages.R")
-#source("global.R")
 
+# Définition du contenu du body
+body <- dashboardBody(
+  tabItems(
+          tabItem(
+            tabName = "home",
+            h2("Shopper Sentiments, Analysis", align = "center"),
+            br(),
+            p("Explore TeePublic's universe with our dynamic dashboard! 
+            Delve into 250,000+ reviews for sentiment insights, identify strategic store 
+            locations through geospatial patterns, adapt to temporal trends, 
+            and categorize feedback for actionable insights. 
+            TeePublic's story unfolds.", align = "center"),
+            br(),
+            div(
+              style = "text-align: center;",
+              tags$img(src = "A.jpg", height = "400px", width = "600px"),
+              br(),
+              
+              br(),
+              p(em("Done by"),br(),em(" Mr Amri Karim and Mr Goumeziane Quentin"),br(),em("contact: amri.dk@hotmail.com / 
+                   quentin.goumeziane@groupe-gema.com"))
+            )
+          ),
+          tabItem(
+            tabName = "map",
+            leafletOutput("map")
+          ),
+          tabItem(
+            tabName = "graphique",
+            tabsetPanel(
+              tabPanel("Armes Utilisées", icon = icon("gun"),
+                       #selectInput("district_type_weapon", "Select a district", choices = unique(data$AREA.NAME)),
+                       #plotOutput("TW_plot")
 
-# Define UI
+              ),
+
+              tabPanel("Sexe des Victimes", icon = icon("venus-mars"),
+                      # selectInput("district_sex_victims", "Select a district", choices = unique(data_ethnie$AREA.NAME)),
+                      # plotOutput("TSV_plot"),
+              ),
+
+              tabPanel("Ethnicité des Victimes", icon = icon("globe-americas"),
+
+                       #selectInput("district_selector_ethnie", "Select a district", choices = unique(data_ethnie$AREA.NAME)),
+                       #plotOutput("TEV_plot")
+              ),
+
+              tabPanel("Top 10 Type de Crime", icon = icon("exclamation-triangle"),
+                       #selectInput("district_type_crimes", "Select a district", choices = unique(data$AREA.NAME)),
+                       #plotOutput("T10C")
+
+              )
+            )
+          ),
+          tabItem(
+            tabName = "data_set",
+            dataTableOutput("tableau"),
+          ),
+          tabItem(
+            tabName = "Summary",
+            verbatimTextOutput("SummaryData")
+          )
+        )
+      )
+
+# Définition de l'UI
 ui <- dashboardPage(
- skin = "yellow",
-  # Theme Selector (optional)
- 
-  
-  # Header
-  dashboardHeader(title = "My Shiny Dashboard"),
-  
-  # Sidebar
-  dashboardSidebar(
+  skin = "black",
+  dashboardHeader(title = "Shiny Dashboard"),
+  dashboardSidebar(  
+    sidebarSearchForm(textId = "searchText", buttonId = "searchButton", label = "Search..."),
     sidebarMenu(
-      # Sidebar items (add more as needed)
       menuItem("Home", tabName = "home", icon = icon("home")),
-      menuItem("Data Exploration", tabName = "explore", icon = icon("chart-bar")),
-      menuItem("Visualizations", tabName = "visualize", icon = icon("chart-line")),
-      menuItem("Settings", tabName = "settings", icon = icon("cogs"))
+            menuItem("Map", tabName = "map", icon = icon("map")),
+            menuItem("Graphs", tabName = "graphique", icon = icon("chart-line")),
+            menuItem("Data Set", tabName = "data_set", icon = icon("table")),
+            menuItem("Summary", tabName = "Summary", icon = icon("chart-pie"))
     )
   ),
-  
-  # Body
-  dashboardBody(
-    tabItems(
-      # Tab 1: Home
-      tabItem(
-        tabName = "home",
-        h2("Welcome to My Shiny Dashboard"),
-        p("This is a template for your Shiny dashboard. Customize it as per your requirements.")
-      ),
-      
-      # Tab 2: Data Exploration
-      tabItem(
-        tabName = "explore",
-        h2("Data Exploration"),
-        # Add content for data exploration
-        # (e.g., tables, data summaries, etc.)
-      ),
-      
-      # Tab 3: Visualizations
-      tabItem(
-        tabName = "visualize",
-        h2("Visualizations"),
-        # Add content for visualizations
-        # (e.g., plots, charts, maps, etc.)
-      ),
-      
-      # Tab 4: Settings
-      tabItem(
-        tabName = "settings",
-        h2("Settings"),
-        # Add content for settings
-        # (e.g., input controls, configuration options, etc.)
-      )
-    )
-  )
+  body
 )
 
-# Define server logic (empty for now)
-server <- function(input, output) {
-  # Add server logic as needed
-}
-
-# Create Shiny app
-shinyApp(ui = ui, server = server)
+# Prévisualisation de l'UI dans la console
+shinyApp(ui = ui, server = function(input, output) { })
 
 
+##############################################################################
+# body <- dashboardBody(
+#   fluidRow(
+#     box(
+#       title = "Box title", width = 6, status = "primary",
+#       "Box content"
+#     ),
+#     box(
+#       status = "warning", width = 6,
+#       "Box content"
+#     )
+#   ),
+#   
+#   fluidRow(
+#     column(width = 4,
+#            box(
+#              title = "Title 1", width = NULL, solidHeader = TRUE, status = "primary",
+#              "Box content"
+#            ),
+#            box(
+#              width = NULL, background = "black",
+#              "A box with a solid black background"
+#            )
+#     ),
+#     
+#     column(width = 4,
+#            box(
+#              title = "Title 3", width = NULL, solidHeader = TRUE, status = "warning",
+#              "Box content"
+#            ),
+#            box(
+#              title = "Title 5", width = NULL, background = "light-blue",
+#              "A box with a solid light-blue background"
+#            )
+#     ),
+#     
+#     column(width = 4,
+#            box(
+#              title = "Title 2", width = NULL, solidHeader = TRUE,
+#              "Box content"
+#            ),
+#            box(
+#              title = "Title 6", width = NULL, background = "maroon",
+#              "A box with a solid maroon background"
+#            )
+#     )
+#   )
+# )
+##############################################################################
+# map_chart$init_server("map_chart",
+#                       df = countries_stats,
+#                       countries_geo_data = countries_geo_data,
+#                       y = selected_year,
+#                       m = selected_month)
+# 
+# countryMap = map_chart$ui("map_chart"),
+##############################################################################
 
+# #source("global.R")
 
-
-
+# 
+# # Define UI
+# ui <- dashboardPage(
+#  skin = "red",
+#   # Theme Selector (optional)
+#  
+#   
+#   # Header
+#   dashboardHeader(title = "My Shiny Dashboard"),
+#   
+#   # Sidebar
+#   dashboardSidebar(
+#     sidebarMenu(
+#       # Sidebar items (add more as needed)
+#       menuItem("Home", tabName = "home", icon = icon("home")),
+#       menuItem("Data Exploration", tabName = "explore", icon = icon("chart-bar")),
+#       menuItem("Visualizations", tabName = "visualize", icon = icon("chart-line")),
+#       menuItem("Settings", tabName = "settings", icon = icon("cogs"))
+#     )
+#   ),
+#   
+#   # Body
+#   dashboardBody(
+#     tabItems(
+#       # Tab 1: Home
+#       tabItem(
+#         tabName = "home",
+#         h2("Welcome to My Shiny Dashboard"),
+#         p("This is a template for your Shiny dashboard. Customize it as per your requirements.")
+#       ),
+#       
+#       # Tab 2: Data Exploration
+#       tabItem(
+#         tabName = "explore",
+#         h2("Data Exploration"),
+#         # Add content for data exploration
+#         # (e.g., tables, data summaries, etc.)
+#       ),
+#       
+#       # Tab 3: Visualizations
+#       tabItem(
+#         tabName = "visualize",
+#         h2("Visualizations"),
+#         # Add content for visualizations
+#         # (e.g., plots, charts, maps, etc.)
+#       ),
+#       
+#       # Tab 4: Settings
+#       tabItem(
+#         tabName = "settings",
+#         h2("Settings"),
+#         # Add content for settings
+#         # (e.g., input controls, configuration options, etc.)
+#       )
+#     )
+#   )
+# )
+# 
+# # Define server logic (empty for now)
+# server <- function(input, output) {
+#   # Add server logic as needed
+# }
+# 
+# # Create Shiny app
+# shinyApp(ui = ui, server = server)
+# 
+# 
+# 
+# 
+# 
+# 
 
 
 
