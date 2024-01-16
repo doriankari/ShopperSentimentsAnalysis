@@ -1,5 +1,5 @@
 source("packages.R")
-
+source("global.R")
 # Définition du contenu du body
 body <- dashboardBody(
   tabItems(
@@ -67,7 +67,7 @@ body <- dashboardBody(
 
 # Définition de l'UI
 ui <- dashboardPage(
-  skin = "black",
+  skin = "purple",
   dashboardHeader(title = "Shiny Dashboard"),
   dashboardSidebar(  
     sidebarSearchForm(textId = "searchText", buttonId = "searchButton", label = "Search..."),
@@ -81,6 +81,18 @@ ui <- dashboardPage(
   ),
   body
 )
+
+server <- function(input, output) {
+  
+  
+   output$tableau <- renderDataTable({
+     filtered_data()
+   })
+
+output$SummaryData <- renderPrint({
+     summary(data())
+    })
+}
 
 # Prévisualisation de l'UI dans la console
 shinyApp(ui = ui, server = function(input, output) { })
