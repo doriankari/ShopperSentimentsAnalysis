@@ -86,7 +86,7 @@ server <- function(input, output) {
   
   
    output$tableau <- renderDataTable({
-     filtered_data()
+     data()
    })
 
 output$SummaryData <- renderPrint({
