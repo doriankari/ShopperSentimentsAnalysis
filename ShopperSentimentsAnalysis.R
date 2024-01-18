@@ -107,12 +107,12 @@ server <- function(input, output) {
   options(shiny.maxRequestSize=100*1024^2)
   ################ancienne version import depuis global########################
   
-  #ancienne version # Charger les données
+  # Charger les données de base
   my_data <- reactive({
     data
   })
- 
- # Affichage de la carte 
+  
+  # Affichage de la carte 
   output$heatMap <- renderLeaflet({
     req(my_data())
     
@@ -142,50 +142,7 @@ server <- function(input, output) {
   #   read.csv(infile$datapath)
   # })
   # 
-  # ###########################Traitement de la donnée############################
-  # observe({
-  #   req(data())
-  #   
-  # 
-  # # Traitement des charactères spéciaux
-  # data[] <- lapply(data, function(x) iconv(x, "UTF-8", "ASCII", sub = ""))
-  # 
-  # #Création de la colonne Saison
-  # data$month <- as.numeric(data$month)
-  # data$Saison <- cut(data$month, breaks = c(0, 3, 6, 9, 12), labels = c("Hiver", "Printemps", "Été", "Automne"))
-  # 
-  # #Création de la colonne Moment
-  # data$review.label <- as.numeric(data$review.label)
-  # data$type.note <- cut(data$review.label, breaks=c(0, 2, 3, 5), labels=c('Négative', 'Neutre', 'Positive'))
-  # 
-  # #Filtre des colonnes
-  # data <- data[, c("store_location", 
-  #                  "latitude", 
-  #                  "longitude", 
-  #                  "date", 
-  #                  "month", 
-  #                  "title", 
-  #                  "review", 
-  #                  "review.label", 
-  #                  "Saison", 
-  #                  "type.note")]
-  # 
-  # #Modification des noms de colonnes
-  # colnames(data)[colnames(data) == "store_location"] <- "Pays"
-  # colnames(data)[colnames(data) == "date"] <- "Année"
-  # colnames(data)[colnames(data) == "month"] <- "Mois"
-  # colnames(data)[colnames(data) == "title"] <- "Titre"
-  # colnames(data)[colnames(data) == "review"] <- "Commentaire"
-  # colnames(data)[colnames(data) == "review.label"] <- "Note"
-  # colnames(data)[colnames(data) == "type.note"] <- "Sentiment"
-  # 
-  # #Affichage des vente par pays
-  # distribution_x <- table(data$Pays)
-  # print(distribution_x)
-  # 
-  # #Filtre des ventes sur les USA
-  # data <- subset(data, Pays %in% c("US", "CA", "AU", "GB", "DE"))
-  # })
+  
   #################################################################################
   
   #  mapppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp 
@@ -210,22 +167,6 @@ server <- function(input, output) {
   
   
   # Charge le gra^hique en barres
-  output$sentiment_bar_plot <- renderPlot({
-    pays_in <- input$pays
-    
-    # Filtrer les données en fonction des pays sélectionnés
-    filtered_data <- my_data()[my_data()$Pays %in% pays_in, ]
-    
-    # Utilisez ggplot pour créer le graphique en barres
-    ggplot(filtered_data, aes(x = Sentiment, y = Sentiment, fill = Sentiment)) +
-      geom_bar(stat = "identity") +
-      labs(title = "Sentiment Distribution",
-           x = "Votre axe X",
-           y = "Votre axe Y") +
-      theme_minimal()
-  })
-  
-  
   
   
   # Charge la table de données
