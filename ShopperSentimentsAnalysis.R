@@ -45,14 +45,14 @@ ui <- dashboardPage(
           tags$img(src = "A.jpg", height = "400px", width = "600px"),
           br(),
           br(),
-          p(em("Done by"), br(), em(" Mr Amri Karim and Mr Goumeziane Quentin"), br(), em("contact: amri.dk@hotmail.com / 
-             quentin.goumeziane@groupe-gema.com"))
+          p(em("Done by"), br(), em(" Mr Amri Karim, Mr Goumeziane Quentin and Mr Rahon-Clos Paco"), br(), em("contact: amri.dk@hotmail.com / 
+             quentin.goumeziane@groupe-gema.com / paco.rahon-clos.edu@groupe-gema.com"))
         )
       ),
       
       tabItem(
         tabName = "map",
-        leafletOutput("us_map")
+        leafletOutput("heatMap")
       ),
       
       tabItem(
@@ -66,7 +66,7 @@ ui <- dashboardPage(
           ),
           
           tabPanel("Avis Par Pays", icon = icon("earth-americas"),
-                  #output plot
+                   #output plot
           ),
           tabPanel("Avis Par Pays", icon = icon("earth-americas"),
                    #output plot
@@ -112,6 +112,8 @@ server <- function(input, output) {
   my_data <- reactive({
     data
   })
+  data$longitude <- as.numeric(data$longitude)
+  data$latitude <- as.numeric(data$latitude)
   ###############################################################################
   
   # 
@@ -224,6 +226,20 @@ server <- function(input, output) {
   
   output$SummaryData <- renderPrint({
     summary(my_data())
+  })
+  
+  output$heatMap <- renderLeaflet({
+    req(my_data())
+    
+    leaflet() %>%
+      addTiles() %>%
+      addHeatmap(
+        data = my_data(),
+        lng = ~longitude,  # Remplacez "longitude" par le nom de votre colonne de longitude
+        lat = ~latitude,   # Remplacez "latitude" par le nom de votre colonne de latitude
+        blur = 20,
+        max = 0.05
+      )
   })
   
 }
