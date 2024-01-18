@@ -45,7 +45,7 @@ ui <- dashboardPage(
   ),
   tabItem(
     tabName = "map",
-    leafletOutput("map")
+    leafletOutput("us_map")
   ),
   tabItem(
     tabName = "graphique",
@@ -73,6 +73,16 @@ ui <- dashboardPage(
 
 # Serveur
 server <- function(input, output) {
+  
+  us_map <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+    addProviderTiles("Esri.WorldGrayCanvas") %>%  # Utilisez un fournisseur de tuiles adapté à votre projet
+    setView(-95.7129, 37.0902, zoom = 4)
+  
+  output$us_map <- renderLeaflet({
+    us_map
+  })
+  
+  
   # Charger les données
   my_data <- reactive({
     data
@@ -98,6 +108,8 @@ server <- function(input, output) {
            y = "Votre axe Y") +
       theme_minimal()
   })
+  
+  
 }
 
 # Prévisualisation de l'UI dans la console
