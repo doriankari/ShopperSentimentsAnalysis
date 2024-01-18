@@ -10,6 +10,7 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("Map", tabName = "map", icon = icon("map")),
+        
       menuItem("Graphique", tabName = "graphique", icon = icon("chart-line"),
                tabPanel("Sentiment Distribution", icon = icon("chart-bar"),
                         selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE)
@@ -45,7 +46,7 @@ ui <- dashboardPage(
   ),
   tabItem(
     tabName = "map",
-    leafletOutput("us_map")
+    leafletOutput("map")
   ),
   tabItem(
     tabName = "graphique",
@@ -73,16 +74,6 @@ ui <- dashboardPage(
 
 # Serveur
 server <- function(input, output) {
-  
-  us_map <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
-    addProviderTiles("Esri.WorldGrayCanvas") %>%  # Utilisez un fournisseur de tuiles adapté à votre projet
-    setView(-95.7129, 37.0902, zoom = 4)
-  
-  output$us_map <- renderLeaflet({
-    us_map
-  })
-  
-  
   # Charger les données
   my_data <- reactive({
     data
@@ -108,8 +99,6 @@ server <- function(input, output) {
            y = "Votre axe Y") +
       theme_minimal()
   })
-  
-  
 }
 
 # Prévisualisation de l'UI dans la console
