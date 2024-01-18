@@ -169,8 +169,8 @@ server <- function(input, output) {
   # Graphique: Répartition du sentiment
   output$sentiment_rep <- renderPlot({
     req(my_data())
-    
-    ggplot(my_data(), aes(x = Sentiment, fill = Sentiment)) +
+    filtered_data <- subset(my_data(), Année %in% input$annee & Pays %in% input$district_type_crimes)
+    ggplot(filtered_data, aes(x = Sentiment, fill = Sentiment)) +
       geom_bar() +
       labs(title = "Répartition du Sentiment",
            x = "Sentiment",
