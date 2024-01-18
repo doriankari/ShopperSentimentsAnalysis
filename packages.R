@@ -1,9 +1,12 @@
 library(shiny)
+library(shinydashboard)
+library(shinythemes)
+library(shinyWidgets)
+
 library(tidyverse)
 library(leaflet)
-library(shinydashboard)
 library(DT)
 library(ggplot2)
 library(dplyr)
-library(shinyWidgets)
-library(shinythemes)
+
+
