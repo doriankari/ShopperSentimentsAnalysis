@@ -1,9 +1,75 @@
 source("packages.R")
+#source("global.R")
 
-source("global.R")
 
-# Interface utilisateur (UI)
+# Définition du contenu du body
+body <- dashboardBody(
+  tabItems(
+    tabItem(
+      tabName = "home",
+      h2("Shopper Sentiments, Analysis", align = "center"),
+      br(),
+      p("Explore TeePublic's universe with our dynamic dashboard!
+            Delve into 250,000+ reviews for sentiment insights, identify strategic store
+            locations through geospatial patterns, adapt to temporal trends,
+            and categorize feedback for actionable insights.
+            TeePublic's story unfolds.", align = "center"),
+      br(),
+      div(
+        style = "text-align: center;",
+        tags$img(src = "A.jpg", height = "400px", width = "600px"),
+        br(),
+
+        br(),
+        p(em("Done by"),br(),em(" Mr Amri Karim and Mr Goumeziane Quentin"),br(),em("contact: amri.dk@hotmail.com /
+                   quentin.goumeziane@groupe-gema.com"))
+      )
+    ),
+    tabItem(
+      tabName = "map",
+      leafletOutput("us_map")
+    ),
+    tabItem(
+      tabName = "graphique",
+      tabsetPanel(
+        tabPanel("Armes Utilisées", icon = icon("gun"),
+                 #selectInput("district_type_weapon", "Select a district", choices = unique(data$AREA.NAME)),
+                 #plotOutput("TW_plot")
+
+        ),
+
+        tabPanel("Sexe des Victimes", icon = icon("venus-mars"),
+                 # selectInput("district_sex_victims", "Select a district", choices = unique(data_ethnie$AREA.NAME)),
+                 # plotOutput("TSV_plot"),
+        ),
+
+        tabPanel("Ethnicité des Victimes", icon = icon("globe-americas"),
+
+                 #selectInput("district_selector_ethnie", "Select a district", choices = unique(data_ethnie$AREA.NAME)),
+                 #plotOutput("TEV_plot")
+        ),
+
+        tabPanel("Top 10 Type de Crime", icon = icon("exclamation-triangle"),
+                 #selectInput("district_type_crimes", "Select a district", choices = unique(data$AREA.NAME)),
+                 #plotOutput("T10C")
+
+        )
+      )
+    ),
+    tabItem(
+      tabName = "data_set",
+      dataTableOutput("tableau"),
+    ),
+    tabItem(
+      tabName = "Summary",
+      verbatimTextOutput("SummaryData")
+    )
+  )
+)
+
+# Définition de l'UI
 ui <- dashboardPage(
+<<<<<<< HEAD
   
   skin = "purple",
   
@@ -12,6 +78,14 @@ ui <- dashboardPage(
   
   
   
+=======
+
+
+
+  dashboardHeader(title = "Shiny Dashboard"),
+
+
+>>>>>>> 5e10948dd54dc78a5aaf33837326251a1f5c194b
   dashboardSidebar(
     sidebarSearchForm(textId = "searchText", buttonId = "searchButton", label = "Search..."),
     
@@ -21,18 +95,12 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("Map", tabName = "map", icon = icon("map")),
-      menuItem("Graphique", tabName = "graphique", icon = icon("chart-line"),
-               tabPanel("Sentiment Distribution", icon = icon("chart-bar"),
-                        selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE)
-               ),
-               tabPanel("pays", icon = icon("exclamation-triangle"),
-                        selectInput("pays", "Choisir les pays", choices = unique(data$Pays), multiple = TRUE)
-               )
-      ),
-      menuItem("Data", tabName = "data", icon = icon("table")),
+      menuItem("Graphs", tabName = "graphique", icon = icon("chart-line")),
+      menuItem("Data Set", tabName = "data_set", icon = icon("table")),
       menuItem("Summary", tabName = "Summary", icon = icon("chart-pie"))
     )
   ),
+<<<<<<< HEAD
   
   
   dashboardBody(
@@ -219,6 +287,30 @@ server <- function(input, output) {
     summary(my_data())
   })
   
+=======
+  body
+)
+# Serveur
+server <- function(input, output) {
+
+
+  us_map <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+    addProviderTiles("Esri.WorldGrayCanvas") %>%  # Utilisez un fournisseur de tuiles adapté à votre projet
+    setView(-95.7129, 37.0902, zoom = 4)
+
+  output$us_map <- renderLeaflet({
+    us_map
+  })
+
+
+  output$tableau <- renderDataTable({
+    my_data()
+  })
+
+  output$SummaryData <- renderPrint({
+    summary(data())
+  })
+>>>>>>> 5e10948dd54dc78a5aaf33837326251a1f5c194b
 }
 
 # Prévisualisation de l'UI dans la console
