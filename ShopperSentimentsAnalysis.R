@@ -1,103 +1,107 @@
 source("packages.R")
 source("global.R")
-# Définition du contenu du body
-body <- dashboardBody(
-  tabItems(
-          tabItem(
-            tabName = "home",
-            h2("Shopper Sentiments, Analysis", align = "center"),
-            br(),
-            p("Explore TeePublic's universe with our dynamic dashboard! 
-            Delve into 250,000+ reviews for sentiment insights, identify strategic store 
-            locations through geospatial patterns, adapt to temporal trends, 
-            and categorize feedback for actionable insights. 
-            TeePublic's story unfolds.", align = "center"),
-            br(),
-            div(
-              style = "text-align: center;",
-              tags$img(src = "A.jpg", height = "400px", width = "600px"),
-              br(),
-              
-              br(),
-              p(em("Done by"),br(),em(" Mr Amri Karim and Mr Goumeziane Quentin"),br(),em("contact: amri.dk@hotmail.com / 
-                   quentin.goumeziane@groupe-gema.com"))
-            )
-          ),
-          tabItem(
-            tabName = "map",
-            leafletOutput("map")
-          ),
-          tabItem(
-            tabName = "graphique",
-            tabsetPanel(
-              tabPanel("Armes Utilisées", icon = icon("gun"),
-                       #selectInput("district_type_weapon", "Select a district", choices = unique(data$AREA.NAME)),
-                       #plotOutput("TW_plot")
 
-              ),
-
-              tabPanel("Sexe des Victimes", icon = icon("venus-mars"),
-                      # selectInput("district_sex_victims", "Select a district", choices = unique(data_ethnie$AREA.NAME)),
-                      # plotOutput("TSV_plot"),
-              ),
-
-              tabPanel("Ethnicité des Victimes", icon = icon("globe-americas"),
-
-                       #selectInput("district_selector_ethnie", "Select a district", choices = unique(data_ethnie$AREA.NAME)),
-                       #plotOutput("TEV_plot")
-              ),
-
-              tabPanel("Top 10 Type de Crime", icon = icon("exclamation-triangle"),
-                       #selectInput("district_type_crimes", "Select a district", choices = unique(data$AREA.NAME)),
-                       #plotOutput("T10C")
-
-              )
-            )
-          ),
-          tabItem(
-            tabName = "data_set",
-            dataTableOutput("tableau"),
-          ),
-          tabItem(
-            tabName = "Summary",
-            verbatimTextOutput("SummaryData")
-          )
-        )
-      )
-
-# Définition de l'UI
+# Interface utilisateur (UI)
 ui <- dashboardPage(
   skin = "purple",
   dashboardHeader(title = "Shiny Dashboard"),
-  dashboardSidebar(  
+  dashboardSidebar(
     sidebarSearchForm(textId = "searchText", buttonId = "searchButton", label = "Search..."),
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
-            menuItem("Map", tabName = "map", icon = icon("map")),
-            menuItem("Graphs", tabName = "graphique", icon = icon("chart-line")),
-            menuItem("Data Set", tabName = "data_set", icon = icon("table")),
-            menuItem("Summary", tabName = "Summary", icon = icon("chart-pie"))
+      menuItem("Map", tabName = "map", icon = icon("map")),
+      menuItem("Graphique", tabName = "graphique", icon = icon("chart-line"),
+               tabPanel("Sentiment Distribution", icon = icon("chart-bar"),
+                        selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE)
+               ),
+               tabPanel("pays", icon = icon("exclamation-triangle"),
+                        selectInput("pays", "Choisir les pays", choices = unique(data$Pays), multiple = TRUE)
+               )
+      ),
+      menuItem("Data", tabName = "data", icon = icon("table")),
+      menuItem("Summary", tabName = "Summary", icon = icon("chart-pie"))
     )
   ),
-  body
+  body = dashboardBody(
+    tabItems(
+  tabItem(
+    tabName = "home",
+    h2("Shopper Sentiments, Analysis", align = "center"),
+    br(),
+    p("Explore TeePublic's universe with our dynamic dashboard! 
+        Delve into 250,000+ reviews for sentiment insights, identify strategic store 
+        locations through geospatial patterns, adapt to temporal trends, 
+        and categorize feedback for actionable insights. 
+        TeePublic's story unfolds.", align = "center"),
+    br(),
+    div(
+      style = "text-align: center;",
+      tags$img(src = "A.jpg", height = "400px", width = "600px"),
+      br(),
+      br(),
+      p(em("Done by"), br(), em(" Mr Amri Karim and Mr Goumeziane Quentin"), br(), em("contact: amri.dk@hotmail.com / 
+             quentin.goumeziane@groupe-gema.com"))
+    )
+  ),
+  tabItem(
+    tabName = "map",
+    leafletOutput("map")
+  ),
+  tabItem(
+    tabName = "graphique",
+    tabsetPanel(
+      tabPanel("Sentiment Distribution", icon = icon("chart-bar"),
+               selectInput("Mois", "Année", choices = unique(data$Année)),
+               plotOutput("TW_plot"), multiple = TRUE),
+      tabPanel("Top 10 Type de Crime", icon = icon("exclamation-triangle"),
+               selectInput("district_type_crimes", "Choix des pays", choices = unique(data$Pays), multiple = TRUE),
+               plotOutput("T10C")
+      )
+    )
+  ),
+  tabItem(
+    tabName = "data",
+    dataTableOutput("tableau")
+  ),
+  tabItem(
+    tabName = "Summary",
+    verbatimTextOutput("SummaryData")
+  )
 )
+  )
+)
+
 # Serveur
 server <- function(input, output) {
+  # Charger les données
+  my_data <- reactive({
+    data
+  })
   
-  my_data <- data()
+  # Charge la table de données
+  output$tableau <- renderDataTable({
+    my_data()
+  })
   
-   output$tableau <- renderDataTable({
-     my_data()
-   })
-
-output$SummaryData <- renderPrint({
-     summary(my_data())
-    })
+  # Charge le gra^hique en barres
+  output$sentiment_bar_plot <- renderPlot({
+    pays_in <- input$pays
+    
+    # Filtrer les données en fonction des pays sélectionnés
+    filtered_data <- my_data()[my_data()$Pays %in% pays_in, ]
+    
+    # Utilisez ggplot pour créer le graphique en barres
+    ggplot(filtered_data, aes(x = Sentiment, y = Sentiment, fill = Sentiment)) +
+      geom_bar(stat = "identity") +
+      labs(title = "Sentiment Distribution",
+           x = "Votre axe X",
+           y = "Votre axe Y") +
+      theme_minimal()
+  })
 }
 
 # Prévisualisation de l'UI dans la console
 shinyApp(ui = ui, server = server)
-
 
 ##############################################################################
 # body <- dashboardBody(
