@@ -57,24 +57,24 @@ ui <- dashboardPage(
       tabItem(
         tabName = "graphique",
         tabsetPanel(
-          tabPanel("DATABASE", icon = icon("database"),
-                   
+          tabPanel("Repartition du sentiment", icon = icon("face-grin-stars"),
                    selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE),
-                   selectInput("district_type_crimes", "Choix des pays", choices = unique(data$Pays), multiple = TRUE),
-                   #output plot
+                   selectInput("district_type_crimes", "Choix des pays", choices = unique(data$Pays), multiple = TRUE),          
+                   plotOutput("sentiment_rep"),
+                   
           ),
           
-          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
-                   #output plot
+          tabPanel("Repartition des notes", icon = icon("star-half-stroke"),
+                   plotOutput("note_rep")
+                   
           ),
-          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
-                   #output plot
-          ),
-          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
-                   #output plot
+          tabPanel("Repartition des pays", icon = icon("globe"),
+                   plotOutput("pays_rep")
+                   
           )
         )
       ),
+      
       
       tabItem(
         tabName = "data",
