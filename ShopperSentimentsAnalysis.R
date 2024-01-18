@@ -13,7 +13,7 @@ ui <- dashboardPage(
   
   
   dashboardSidebar(
-    sidebarSearchForm(textId = "searchText", buttonId = "searchButton", label = "Search..."),
+    
     
     fileInput("fileInput", "Sélectionner un fichier", multiple = FALSE, accept = NULL),
     
@@ -21,14 +21,7 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("Map", tabName = "map", icon = icon("map")),
-      menuItem("Graphique", tabName = "graphique", icon = icon("chart-line"),
-               tabPanel("Sentiment Distribution", icon = icon("chart-bar"),
-                        selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE)
-               ),
-               tabPanel("pays", icon = icon("exclamation-triangle"),
-                        selectInput("pays", "Choisir les pays", choices = unique(data$Pays), multiple = TRUE)
-               )
-      ),
+      menuItem("Graphique", tabName = "graphique", icon = icon("chart-line")),
       menuItem("Data", tabName = "data", icon = icon("table")),
       menuItem("Summary", tabName = "Summary", icon = icon("chart-pie"))
     )
@@ -65,12 +58,21 @@ ui <- dashboardPage(
       tabItem(
         tabName = "graphique",
         tabsetPanel(
-          tabPanel("Sentiment Distribution", icon = icon("chart-bar"),
-                   selectInput("Mois", "Année", choices = unique(data$Année)),
-                   plotOutput("TW_plot"), multiple = TRUE),
-          tabPanel("Top 10 Type de Crime", icon = icon("exclamation-triangle"),
+          tabPanel("DATABASE", icon = icon("database"),
+                   
+                   selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE),
                    selectInput("district_type_crimes", "Choix des pays", choices = unique(data$Pays), multiple = TRUE),
-                   plotOutput("T10C")
+                   #output plot
+          ),
+          
+          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
+                  #output plot
+          ),
+          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
+                   #output plot
+          ),
+          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
+                   #output plot
           )
         )
       ),
@@ -79,9 +81,15 @@ ui <- dashboardPage(
         tabName = "data",
         tabsetPanel(
           
-          tabPanel(dataTableOutput("tableau1")),
+          tabPanel("DATABASE", icon = icon("database"),
+                   
+                   #selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE),
+                   dataTableOutput("tableau1")
+          ),
           
-          tabPanel(dataTableOutput("tableau2"))
+          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
+                   dataTableOutput("tableau2")
+          )
         )
       ),
       
