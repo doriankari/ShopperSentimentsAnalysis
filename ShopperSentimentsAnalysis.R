@@ -3,6 +3,7 @@ source("packages.R")
 source("global.R")
 
 # Interface utilisateur (UI)
+renderUI(
 ui <- dashboardPage(
   
   skin = "purple",
@@ -16,7 +17,6 @@ ui <- dashboardPage(
     
     
     fileInput("fileInput", "Sélectionner un fichier", multiple = FALSE, accept = NULL),
-    
     
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
@@ -60,125 +60,128 @@ ui <- dashboardPage(
         tabsetPanel(
           tabPanel("DATABASE", icon = icon("database"),
                    
-                   selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE),
-                   selectInput("district_type_crimes", "Choix des pays", choices = unique(data$Pays), multiple = TRUE),
-                   #output plot
-          ),
-          
-          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
-                  #output plot
-          ),
-          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
-                   #output plot
-          ),
-          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
-                   #output plot
-          )
-        )
-      ),
+                   selectInput("annee", "Année", choices = c("2020", "2021","2022" ), multiple = TRUE)
+          # selectInput("district_type_crimes", "Choix des pays", choices = unique(data$Pays), multiple = TRUE),
+          #output plot
+        ),
       
-      tabItem(
-        tabName = "data",
-        tabsetPanel(
-          
-          tabPanel("DATABASE", icon = icon("database"),
-                   
-                   #selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE),
-                   dataTableOutput("tableau1")
-          ),
-          
-          tabPanel("Avis Par Pays", icon = icon("earth-americas"),
-                   dataTableOutput("tableau2")
-          )
-        )
+      tabPanel("Avis Par Pays", icon = icon("earth-americas"),
+               #output plot
       ),
-      
-      tabItem(
-        tabName = "Summary",
-        verbatimTextOutput("SummaryData")
+      tabPanel("Avis Par Pays", icon = icon("earth-americas"),
+               #output plot
+      ),
+      tabPanel("Avis Par Pays", icon = icon("earth-americas"),
+               #output plot
       )
     )
+  ),
+  
+  tabItem(
+    tabName = "data",
+    tabsetPanel(
+      
+      tabPanel("DATABASE", icon = icon("database"),
+               
+               selectInput("annee", "Année", choices = c("2020", "2021","2022" ), multiple = TRUE),
+               dataTableOutput("tableau1")
+      ),
+      
+      tabPanel("Avis Par Pays", icon = icon("earth-americas"),
+               dataTableOutput("tableau2")
+      )
+    )
+  ),
+  
+  tabItem(
+    tabName = "Summary",
+    verbatimTextOutput("SummaryData")
   )
 )
+)
 
+)
+
+)#uireact
 
 # Serveur
 server <- function(input, output) {
   
   options(shiny.maxRequestSize=100*1024^2)
+  
+  uireact <- reactive()
+  
+  
   ################ancienne version import depuis global########################
   
   #ancienne version # Charger les données
-  my_data <- reactive({
-    data
-  })
+  # my_data <- reactive({
+  #   data
+  # })
   ###############################################################################
   
-  # 
-  # # Charger les données
-  # data <- reactive({
-  #   
-  #   req(input$fileInput)
-  #   
-  #   infile <- input$fileInput
-  #   if (is.null(infile)) {
-  #     return(NULL)
-  #   }
-  #   read.csv(infile$datapath)
-  # })
-  # 
-  # ###########################Traitement de la donnée############################
-  # observe({
-  #   req(data())
-  #   
-  # 
-  # # Traitement des charactères spéciaux
-  # data[] <- lapply(data, function(x) iconv(x, "UTF-8", "ASCII", sub = ""))
-  # 
-  # #Création de la colonne Saison
-  # data$month <- as.numeric(data$month)
-  # data$Saison <- cut(data$month, breaks = c(0, 3, 6, 9, 12), labels = c("Hiver", "Printemps", "Été", "Automne"))
-  # 
-  # #Création de la colonne Moment
-  # data$review.label <- as.numeric(data$review.label)
-  # data$type.note <- cut(data$review.label, breaks=c(0, 2, 3, 5), labels=c('Négative', 'Neutre', 'Positive'))
-  # 
-  # #Filtre des colonnes
-  # data <- data[, c("store_location", 
-  #                  "latitude", 
-  #                  "longitude", 
-  #                  "date", 
-  #                  "month", 
-  #                  "title", 
-  #                  "review", 
-  #                  "review.label", 
-  #                  "Saison", 
-  #                  "type.note")]
-  # 
-  # #Modification des noms de colonnes
-  # colnames(data)[colnames(data) == "store_location"] <- "Pays"
-  # colnames(data)[colnames(data) == "date"] <- "Année"
-  # colnames(data)[colnames(data) == "month"] <- "Mois"
-  # colnames(data)[colnames(data) == "title"] <- "Titre"
-  # colnames(data)[colnames(data) == "review"] <- "Commentaire"
-  # colnames(data)[colnames(data) == "review.label"] <- "Note"
-  # colnames(data)[colnames(data) == "type.note"] <- "Sentiment"
-  # 
-  # #Affichage des vente par pays
-  # distribution_x <- table(data$Pays)
-  # print(distribution_x)
-  # 
-  # #Filtre des ventes sur les USA
-  # data <- subset(data, Pays %in% c("US", "CA", "AU", "GB", "DE"))
-  # })
-  #################################################################################
   
-  #  mapppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp 
+  # Charger les données
+  data <- reactive({
+    
+    req(input$fileInput)
+    
+    infile <- input$fileInput
+    if (is.null(infile)) {
+      return(NULL)
+    }
+    read.csv(infile$datapath)
+  })
+  
+  ###########################Traitement de la donnée############################
+  
+  
+  datatraiter <- reactive ({
+    data <- data() #reactive dans data
+      
+    # Traitement des charactères spéciaux
+    data[] <- lapply(data, function(x) iconv(x, "UTF-8", "ASCII", sub = ""))
+
+    #Création de la colonne Saison
+    data$month <- as.numeric(data$month)
+    data$Saison <- cut(data$month, breaks = c(0, 3, 6, 9, 12), labels = c("Hiver", "Printemps", "Été", "Automne"))
+
+    #Création de la colonne Moment
+    data$review.label <- as.numeric(data$review.label)
+    data$type.note <- cut(data$review.label, breaks=c(0, 2, 3, 5), labels=c('Négative', 'Neutre', 'Positive'))
+
+    #Filtre des colonnes
+    data <- data[, c("store_location",
+                     "latitude",
+                     "longitude",
+                     "date",
+                     "month",
+                     "title",
+                     "review",
+                     "review.label",
+                     "Saison",
+                     "type.note")]
+
+    #Modification des noms de colonnes
+    colnames(data)[colnames(data) == "store_location"] <- "Pays"
+    colnames(data)[colnames(data) == "date"] <- "Année"
+    colnames(data)[colnames(data) == "month"] <- "Mois"
+    colnames(data)[colnames(data) == "title"] <- "Titre"
+    colnames(data)[colnames(data) == "review"] <- "Commentaire"
+    colnames(data)[colnames(data) == "review.label"] <- "Note"
+    colnames(data)[colnames(data) == "type.note"] <- "Sentiment"
+
+    #Filtre des ventes sur les USA
+    data <- subset(data, Pays %in% c("US", "CA", "AU", "GB", "DE"))
+    })
+    
+  # ################################################################################
+  #  mapppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
   #   us_map <- leaflet(data) %>%
   #     addProviderTiles("Esri.WorldGrayCanvas") %>%
   #     setView(-95.7129, 37.0902, zoom = 4)
-  #   
-  #   
+  # 
+  # 
   #   us_map <- us_map %>%
   #     addCircleMarkers(
   #       radius = 5,
@@ -215,15 +218,18 @@ server <- function(input, output) {
   
   # Charge la table de données
   output$tableau1 <- renderDataTable({
-    my_data()
+    datatraiter()
   })
+
   
-  output$tableau2 <- renderDataTable({
+  # #Affichage des vente par pays
+  output$tableau2 <- renderDT({
+    distribution_x <- table(datatraiter()$Pays)
     distribution_x %>% as.data.frame()
   })
   
   output$SummaryData <- renderPrint({
-    summary(my_data())
+    summary(data())
   })
   
 }
