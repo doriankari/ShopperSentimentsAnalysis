@@ -1,5 +1,4 @@
 source("packages.R")
-
 source("global.R")
 
 # Interface utilisateur (UI)
@@ -112,8 +111,22 @@ server <- function(input, output) {
   my_data <- reactive({
     data
   })
-  data$longitude <- as.numeric(data$longitude)
-  data$latitude <- as.numeric(data$latitude)
+ 
+ # Affichage de la carte 
+  output$heatMap <- renderLeaflet({
+    req(my_data())
+    
+    leaflet() %>%
+      addTiles() %>%
+      addHeatmap(
+        data = my_data(),
+        lng = ~longitude,
+        lat = ~latitude,
+        blur = 20,
+        max = 0.05
+      )
+  })
+  
   ###############################################################################
   
   # 
@@ -228,19 +241,7 @@ server <- function(input, output) {
     summary(my_data())
   })
   
-  output$heatMap <- renderLeaflet({
-    req(my_data())
-    
-    leaflet() %>%
-      addTiles() %>%
-      addHeatmap(
-        data = my_data(),
-        lng = ~longitude,  # Remplacez "longitude" par le nom de votre colonne de longitude
-        lat = ~latitude,   # Remplacez "latitude" par le nom de votre colonne de latitude
-        blur = 20,
-        max = 0.05
-      )
-  })
+  
   
 }
 
