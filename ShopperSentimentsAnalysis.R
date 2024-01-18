@@ -166,8 +166,42 @@ server <- function(input, output) {
   # })
   
   
-  # Charge le gra^hique en barres
+  # Graphique: Répartition du sentiment
+  output$sentiment_rep <- renderPlot({
+    req(my_data())
+    
+    ggplot(my_data(), aes(x = Sentiment, fill = Sentiment)) +
+      geom_bar() +
+      labs(title = "Répartition du Sentiment",
+           x = "Sentiment",
+           y = "Nombre d'avis") +
+      theme_minimal()
+  })
   
+  # Graphique: Répartition des notes
+  output$note_rep <- renderPlot({
+    req(my_data())
+    
+    ggplot(my_data(), aes(x = as.factor(Note), fill = as.factor(Note))) +
+      geom_bar() +
+      labs(title = "Répartition des Notes",
+           x = "Note",
+           y = "Nombre d'avis") +
+      theme_minimal()
+  })
+  
+  # Graphique: Répartition des pays
+  output$pays_rep <- renderPlot({
+    req(my_data())
+    
+    ggplot(my_data(), aes(x = Pays, fill = Pays)) +
+      geom_bar() +
+      labs(title = "Répartition des Pays",
+           x = "Pays",
+           y = "Nombre d'avis") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  })
   
   # Charge la table de données
   output$tableau1 <- renderDataTable({
