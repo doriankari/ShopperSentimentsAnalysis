@@ -117,34 +117,7 @@ server <- function(input, output) {
   #  data
   #})
   
-  output$TestMap <- renderUI({
-    if(input$fichierImport){
-      selectInput("pays_sélectionné", "Sélectionnez un pays :",
-                  choices = unique(datatraiter()$Pays,multiple = TRUE)
-                  
-      )
-      
-    }
-  })
-  
-  #  mapppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
-  # Affichage de la carte
-  output$map <- renderLeaflet({
-    
-    # Calculer le centre de la carte en fonction des coordonnées des pays filtrés
-    center_lat <- mean(datatraiter()$latitude)
-    center_lng <- mean(datatraiter()$longitude)
-    
-    leaflet(datatraiter()) %>%
-      addTiles() %>%
-      addMarkers(
-        lat = ~latitude,
-        lng = ~longitude,
-        clusterOptions = markerClusterOptions(),
-      )%>%
-      setView(lng = center_lng, lat = center_lat, zoom = 4)
-  })
-  
+ 
   
   
   
@@ -201,11 +174,41 @@ server <- function(input, output) {
     colnames(data)[colnames(data) == "review.label"] <- "Note"
     colnames(data)[colnames(data) == "type.note"] <- "Sentiment"
     
+    data$longitude <- as.numeric(data$longitude)
+    data$latitude <- as.numeric(data$latitude)
+    
     return(data %>% as.data.frame())
   })
   
   # ################################################################################
   
+  output$TestMap <- renderUI({
+    if(input$fichierImport){
+      selectInput("pays_sélectionné", "Sélectionnez un pays :",
+                  choices = unique(datatraiter()$Pays,multiple = TRUE)
+                  
+      )
+      
+    }
+  })
+  
+  #  mapppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
+  # Affichage de la carte
+  output$map <- renderLeaflet({
+    
+    # Calculer le centre de la carte en fonction des coordonnées des pays filtrés
+    center_lat <- mean(datatraiter()$latitude)
+    center_lng <- mean(datatraiter()$longitude)
+    
+    leaflet(datatraiter()) %>%
+      addTiles() %>%
+      addMarkers(
+        lat = ~latitude,
+        lng = ~longitude,
+        clusterOptions = markerClusterOptions(),
+      )%>%
+      setView(lng = center_lng, lat = center_lat, zoom = 4)
+  })
   
   
   output$plot1 <- renderUI({
@@ -265,9 +268,9 @@ server <- function(input, output) {
   output$pays_rep <- renderPlot({
     
     #Filtre des ventes sur les USA
-    data <- subset(datatraiter, Pays %in% c("US", "CA", "AU", "GB", "DE"))
+    data <- subset(datatraiter, Pays%in% c("US", "CA", "AU", "GB", "DE"))
     
-    ggplot(data(), aes(x = Pays, fill = Pays)) +
+    ggplot(data, aes(x = Pays, fill = Pays)) +
       geom_bar() +
       labs(title = "Répartition des Pays",
            x = "Pays",
