@@ -12,7 +12,9 @@
   data analysis tools.*
 
 *View of application*
-![DASHBOARD](https://github.com/doriankari/RshinyApp/assets/146330254/7e148bd2-2c4e-4fac-a900-4d62fbc1d170)
+
+![DASHBOARD](https://github.com/doriankari/ShopperSentimentsAnalysis/assets/146330254/5518a955-204f-4fc6-baa5-5585b02e0ffe)
+
 
 ## Getting Started
 
