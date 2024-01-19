@@ -2,14 +2,12 @@ source("packages.R")
 source("global.R")
 
 # Interface utilisateur (UI)
-#renderUI(
+
 ui <- dashboardPage(
   
   skin = "purple",
   
   dashboardHeader(title = "Shiny Dashboard"),
-  
-  
   
   
   dashboardSidebar(
@@ -51,25 +49,24 @@ ui <- dashboardPage(
       
       tabItem(
         tabName = "map",
-        leafletOutput("heatMap")
+        leafletOutput("map")
       ),
       
       tabItem(
         tabName = "graphique",
         tabsetPanel(
           tabPanel("Repartition du sentiment", icon = icon("face-grin-stars"),
-                   selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE),
-                   selectInput("district_type_crimes", "Choix des pays", choices = unique(data$Pays), multiple = TRUE),          
-                   plotOutput("sentiment_rep"),
+                   
+                   uiOutput("plot1")
                    
           ),
           
           tabPanel("Repartition des notes", icon = icon("star-half-stroke"),
-                   plotOutput("note_rep")
+                   uiOutput("plot2")
                    
           ),
           tabPanel("Repartition des pays", icon = icon("globe"),
-                   plotOutput("pays_rep")
+                   uiOutput("plot3")
                    
           )
         )
@@ -81,8 +78,6 @@ ui <- dashboardPage(
         tabsetPanel(
           
           tabPanel("DATABASE", icon = icon("database"),
-                   
-                   #selectInput("annee", "Année", choices = unique(data$Année), multiple = TRUE),
                    dataTableOutput("tableau1")
           ),
           
@@ -100,37 +95,34 @@ ui <- dashboardPage(
   )
 )
 
-#)#uireact
 
 # Serveur
 server <- function(input, output) {
   
   options(shiny.maxRequestSize=100*1024^2)
   
-  uireact <- reactive()
   
   
   ################ancienne version import depuis global########################
   
   # Charger les données de base
- # my_data <- reactive({
+  # my_data <- reactive({
   #  data
   #})
   
+  
+  #  mapppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
   # Affichage de la carte 
-  output$heatMap <- renderLeaflet({
-    req(my_data())
-    
-    leaflet() %>%
+  output$map <- renderLeaflet({
+    leaflet(data()) %>%
       addTiles() %>%
-      addHeatmap(
-        data = my_data(),
-        lng = ~longitude,
+      addMarkers(
         lat = ~latitude,
-        blur = 20,
-        max = 0.05
+        lng = ~longitude,
+        clusterOptions = markerClusterOptions()
       )
   })
+  
   
   ###############################################################################
   
@@ -152,18 +144,18 @@ server <- function(input, output) {
   
   datatraiter <- reactive ({
     data <- data() #reactive dans data
-      
+    
     # Traitement des charactères spéciaux
     data[] <- lapply(data, function(x) iconv(x, "UTF-8", "ASCII", sub = ""))
-
+    
     #Création de la colonne Saison
     data$month <- as.numeric(data$month)
     data$Saison <- cut(data$month, breaks = c(0, 3, 6, 9, 12), labels = c("Hiver", "Printemps", "Été", "Automne"))
-
+    
     #Création de la colonne Moment
     data$review.label <- as.numeric(data$review.label)
     data$type.note <- cut(data$review.label, breaks=c(0, 2, 3, 5), labels=c('Négative', 'Neutre', 'Positive'))
-
+    
     #Filtre des colonnes
     data <- data[, c("store_location",
                      "latitude",
@@ -175,7 +167,7 @@ server <- function(input, output) {
                      "review.label",
                      "Saison",
                      "type.note")]
-
+    
     #Modification des noms de colonnes
     colnames(data)[colnames(data) == "store_location"] <- "Pays"
     colnames(data)[colnames(data) == "date"] <- "Année"
@@ -184,37 +176,28 @@ server <- function(input, output) {
     colnames(data)[colnames(data) == "review"] <- "Commentaire"
     colnames(data)[colnames(data) == "review.label"] <- "Note"
     colnames(data)[colnames(data) == "type.note"] <- "Sentiment"
-
-    #Filtre des ventes sur les USA
-    data <- subset(data, Pays %in% c("US", "CA", "AU", "GB", "DE"))
-    })
     
-  # ################################################################################
-  #  mapppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
-  #   us_map <- leaflet(data) %>%
-  #     addProviderTiles("Esri.WorldGrayCanvas") %>%
-  #     setView(-95.7129, 37.0902, zoom = 4)
-  # 
-  # 
-  #   us_map <- us_map %>%
-  #     addCircleMarkers(
-  #       radius = 5,
-  #       color = "blue",
-  #       fillOpacity = 0.8,
-  #       popup = ~Sentiment,
-  #       label = ~Sentiment,
-  #       clusterOptions = markerClusterOptions()
-  #     )
-  # 
-  # output$us_map <- renderLeaflet({
-  #   us_map
-  # })
+
+  })
   
+  # ################################################################################
+  
+  
+  
+  output$plot1 <- renderUI({
+    if(input$fichierImport){
+      selectInput("annee", "Année", choices = unique(data()$Année),selected = 2020, multiple = TRUE)
+      selectInput("pays", "Choix des pays", choices = unique(data()$Pays),selected = US, multiple = TRUE)
+      
+      sentiment_rep
+    }
+  })
   
   # Graphique: Répartition du sentiment
   output$sentiment_rep <- renderPlot({
-    req(my_data())
-    filtered_data <- subset(my_data(), Année %in% input$annee & Pays %in% input$district_type_crimes)
+    
+    filtered_data <- subset(datatraiter(), Année %in% input$annee & Pays %in% input$district_type_crimes)
+    
     ggplot(filtered_data, aes(x = Sentiment, fill = Sentiment)) +
       geom_bar() +
       labs(title = "Répartition du Sentiment",
@@ -223,11 +206,23 @@ server <- function(input, output) {
       theme_minimal()
   })
   
+  
+  
+  
+  output$plot2 <- renderUI({
+    if(input$fichierImport){
+      # selectInput("annee", "Année", choices = unique(data()$Année),selected = 2020, multiple = TRUE)
+      # selectInput("pays", "Choix des pays", choices = unique(data()$Pays),selected = US, multiple = TRUE)
+      
+      note_rep
+      
+    }
+  })
+  
   # Graphique: Répartition des notes
   output$note_rep <- renderPlot({
-    req(my_data())
     
-    ggplot(my_data(), aes(x = as.factor(Note), fill = as.factor(Note))) +
+    ggplot(datatraiter(), aes(x = as.factor(Note), fill = as.factor(Note))) +
       geom_bar() +
       labs(title = "Répartition des Notes",
            x = "Note",
@@ -235,11 +230,22 @@ server <- function(input, output) {
       theme_minimal()
   })
   
+  
+  
+  output$plot3 <- renderUI({
+    if(input$fichierImport){
+      selectInput("annee", "Année", choices = unique(data()$Année),selected = 2020, multiple = TRUE)
+      selectInput("pays", "Choix des pays", choices = unique(data()$Pays),selected = US, multiple = TRUE)
+      
+      pays_rep
+      
+    }
+  })
+  
   # Graphique: Répartition des pays
   output$pays_rep <- renderPlot({
-    req(my_data())
-    
-    ggplot(my_data(), aes(x = Pays, fill = Pays)) +
+
+    ggplot(datatraiter(), aes(x = Pays, fill = Pays)) +
       geom_bar() +
       labs(title = "Répartition des Pays",
            x = "Pays",
@@ -252,7 +258,7 @@ server <- function(input, output) {
   output$tableau1 <- renderDataTable({
     datatraiter()
   })
-
+  
   
   # #Affichage des vente par pays
   output$tableau2 <- renderDT({
