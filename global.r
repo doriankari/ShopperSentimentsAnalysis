@@ -1,3 +1,5 @@
+#Ancienne version pas interactive
+
 # data <- read.csv("DATA/TeePublic_review.csv", header = TRUE, encoding =  "UTF-8")
 # 
 # # Traitement des charactères spéciaux
