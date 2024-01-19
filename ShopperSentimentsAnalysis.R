@@ -14,7 +14,7 @@ ui <- dashboardPage(
     
     
     fileInput("fileInput", "Sélectionner un fichier", multiple = FALSE, accept = NULL),
-    checkboxInput("fichierImport", "OK!", value = FALSE),
+    checkboxInput("fichierImport", "Validate the importation of data", value = FALSE),
     
     
     sidebarMenu(
@@ -120,21 +120,21 @@ server <- function(input, output) {
   output$TestMap <- renderUI({
     if(input$fichierImport){
       selectInput("pays_sélectionné", "Sélectionnez un pays :",
-                  choices = unique(datatraiter()$Pays),
-
+                  choices = unique(datatraiter()$Pays,multiple = TRUE)
+                  
       )
-
+      
     }
   })
-
+  
   #  mapppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
   # Affichage de la carte
   output$map <- renderLeaflet({
-
+    
     # Calculer le centre de la carte en fonction des coordonnées des pays filtrés
     center_lat <- mean(datatraiter()$latitude)
     center_lng <- mean(datatraiter()$longitude)
-
+    
     leaflet(datatraiter()) %>%
       addTiles() %>%
       addMarkers(
@@ -144,7 +144,7 @@ server <- function(input, output) {
       )%>%
       setView(lng = center_lng, lat = center_lat, zoom = 4)
   })
-
+  
   
   
   
@@ -221,7 +221,7 @@ server <- function(input, output) {
     
     filtered_data <- subset(datatraiter(), Année %in% input$annee & Pays %in% input$district_type_crimes)
     
-    ggplot(datatraiter, aes(x = Sentiment, fill = Sentiment)) +
+    ggplot(datatraiter(), aes(x = Sentiment, fill = Sentiment)) +
       geom_bar() +
       labs(title = "Répartition du Sentiment",
            x = "Sentiment",
@@ -258,13 +258,16 @@ server <- function(input, output) {
       selectInput("annee", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
       selectInput("pays", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
       
-          }
+    }
   })
   
   # Graphique: Répartition des pays
   output$pays_rep <- renderPlot({
     
-    ggplot(datatraiter(), aes(x = Pays, fill = Pays)) +
+    #Filtre des ventes sur les USA
+    data <- subset(datatraiter, Pays %in% c("US", "CA", "AU", "GB", "DE"))
+    
+    ggplot(data(), aes(x = Pays, fill = Pays)) +
       geom_bar() +
       labs(title = "Répartition des Pays",
            x = "Pays",
