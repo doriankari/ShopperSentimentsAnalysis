@@ -14,6 +14,8 @@ ui <- dashboardPage(
     
     
     fileInput("fileInput", "Sélectionner un fichier", multiple = FALSE, accept = NULL),
+    checkboxInput("fichierImport", "OK!", value = FALSE),
+    
     
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
@@ -29,6 +31,7 @@ ui <- dashboardPage(
     tabItems(
       tabItem(
         tabName = "home",
+        strong("<- Please upload the data from here "),
         h2("Shopper Sentiments, Analysis", align = "center"),
         br(),
         p("Explore TeePublic's universe with our dynamic dashboard! 
@@ -42,13 +45,14 @@ ui <- dashboardPage(
           tags$img(src = "A.jpg", height = "400px", width = "600px"),
           br(),
           br(),
-          p(em("Done by"), br(), em(" Mr Amri Karim, Mr Goumeziane Quentin and Mr Rahon-Clos Paco"), br(), em("contact: amri.dk@hotmail.com / 
+          p(em("Done by"), br(), em(" M. Amri Karim, M.Goumeziane Quentin, M. Rahon-Clos Paco"), br(), em("contact: amri.dk@hotmail.com / 
              quentin.goumeziane@groupe-gema.com / paco.rahon-clos.edu@groupe-gema.com"))
         )
       ),
       
       tabItem(
         tabName = "map",
+        uiOutput("TestMap"),
         leafletOutput("map")
       ),
       
@@ -57,16 +61,19 @@ ui <- dashboardPage(
         tabsetPanel(
           tabPanel("Repartition du sentiment", icon = icon("face-grin-stars"),
                    
-                   uiOutput("plot1")
+                   uiOutput("plot1"),
+                   plotOutput("sentiment_rep")
                    
           ),
           
           tabPanel("Repartition des notes", icon = icon("star-half-stroke"),
-                   uiOutput("plot2")
+                   uiOutput("plot2"),
+                   plotOutput("note_rep")
                    
           ),
           tabPanel("Repartition des pays", icon = icon("globe"),
-                   uiOutput("plot3")
+                   uiOutput("plot3"),
+                   plotOutput("pays_rep")
                    
           )
         )
@@ -110,18 +117,35 @@ server <- function(input, output) {
   #  data
   #})
   
-  
+  output$TestMap <- renderUI({
+    if(input$fichierImport){
+      selectInput("pays_sélectionné", "Sélectionnez un pays :",
+                  choices = unique(datatraiter()$Pays),
+
+      )
+
+    }
+  })
+
   #  mapppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
-  # Affichage de la carte 
+  # Affichage de la carte
   output$map <- renderLeaflet({
-    leaflet(data()) %>%
+
+    # Calculer le centre de la carte en fonction des coordonnées des pays filtrés
+    center_lat <- mean(datatraiter()$latitude)
+    center_lng <- mean(datatraiter()$longitude)
+
+    leaflet(datatraiter()) %>%
       addTiles() %>%
       addMarkers(
         lat = ~latitude,
         lng = ~longitude,
-        clusterOptions = markerClusterOptions()
-      )
+        clusterOptions = markerClusterOptions(),
+      )%>%
+      setView(lng = center_lng, lat = center_lat, zoom = 4)
   })
+
+  
   
   
   ###############################################################################
@@ -177,7 +201,7 @@ server <- function(input, output) {
     colnames(data)[colnames(data) == "review.label"] <- "Note"
     colnames(data)[colnames(data) == "type.note"] <- "Sentiment"
     
-
+    return(data %>% as.data.frame())
   })
   
   # ################################################################################
@@ -186,10 +210,9 @@ server <- function(input, output) {
   
   output$plot1 <- renderUI({
     if(input$fichierImport){
-      selectInput("annee", "Année", choices = unique(data()$Année),selected = 2020, multiple = TRUE)
-      selectInput("pays", "Choix des pays", choices = unique(data()$Pays),selected = US, multiple = TRUE)
+      selectInput("annee", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
+      selectInput("pays", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
       
-      sentiment_rep
     }
   })
   
@@ -198,7 +221,7 @@ server <- function(input, output) {
     
     filtered_data <- subset(datatraiter(), Année %in% input$annee & Pays %in% input$district_type_crimes)
     
-    ggplot(filtered_data, aes(x = Sentiment, fill = Sentiment)) +
+    ggplot(datatraiter, aes(x = Sentiment, fill = Sentiment)) +
       geom_bar() +
       labs(title = "Répartition du Sentiment",
            x = "Sentiment",
@@ -211,10 +234,8 @@ server <- function(input, output) {
   
   output$plot2 <- renderUI({
     if(input$fichierImport){
-      # selectInput("annee", "Année", choices = unique(data()$Année),selected = 2020, multiple = TRUE)
-      # selectInput("pays", "Choix des pays", choices = unique(data()$Pays),selected = US, multiple = TRUE)
-      
-      note_rep
+      selectInput("annee", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
+      selectInput("pays", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
       
     }
   })
@@ -234,17 +255,15 @@ server <- function(input, output) {
   
   output$plot3 <- renderUI({
     if(input$fichierImport){
-      selectInput("annee", "Année", choices = unique(data()$Année),selected = 2020, multiple = TRUE)
-      selectInput("pays", "Choix des pays", choices = unique(data()$Pays),selected = US, multiple = TRUE)
+      selectInput("annee", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
+      selectInput("pays", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
       
-      pays_rep
-      
-    }
+          }
   })
   
   # Graphique: Répartition des pays
   output$pays_rep <- renderPlot({
-
+    
     ggplot(datatraiter(), aes(x = Pays, fill = Pays)) +
       geom_bar() +
       labs(title = "Répartition des Pays",
@@ -267,7 +286,7 @@ server <- function(input, output) {
   })
   
   output$SummaryData <- renderPrint({
-    summary(data())
+    summary(datatraiter())
   })
   
   
