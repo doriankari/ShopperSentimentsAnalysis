@@ -50,14 +50,14 @@ library(package)
 ## Application Structure
 
 - `ShopperSentimentsAnalysis.R`: Defines the user and server interface
-- `global.R`: Contains the variables 
+- `global.R`: Usually contains the variables, but here it's empty because datas are loaded by the user
 - `Packages.R`: Includes all packages for build an application
 - `wwww` : Contains pictures
 
 ## Instructions 
 
 Navigate through the tabs to access different analyses.
-you can download the graph in pdf by clicking on the button
+you can download in pdf by clicking on the button.
 
 ## Contact
 
