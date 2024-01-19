@@ -28,7 +28,7 @@
    ```sh
    git clone [https://github.com/doriankari/RshinyApp.git]
    ```
-2. Download the dataset using this link [Crime-Data](https://data.lacity.org/Public-Safety/Crime-Data-from-2020-to-Present/2nrs-mtv8/about_data)
+2. Download the dataset using this link [TeePublic](https://www.kaggle.com/datasets/nelgiriyewithana/shoppersentiments?resource=download)
 
 3. Download the repo, store the files in a folder and then create subfolders "www" in which you can put photos, "data" which will contain your data.
    
@@ -41,15 +41,13 @@ Then don't forget to load it :
 ```R
 library(package)
 ```
-5. Run the "global.r" file, then change the path of the first line of code to access data.frame to your path (where "data" is stored).
+5. Run the application locally by opening the `ShopperSentimentsAnalysis.R` file in RStudio and clicking 'Run App'.
 
-6. Launch the "app.R" file, replace the first 2 lines of the "source" path with your own (where you've stored the repo) so that the Packages.R and Global.R files run.
-
-7. Run the application locally by opening the `crim_appli.R` file in RStudio and clicking 'Run App'. 
+6. Load your data in CSV format with button in the app
 
 ## Application Structure
 
-- `app.R`: Defines the user and server interface
+- `ShopperSentimentsAnalysis.R`: Defines the user and server interface
 - `global.R`: Contains the variables 
 - `Packages.R`: Includes all packages for build an application
 - `wwww` : Contains pictures
@@ -57,10 +55,7 @@ library(package)
 ## Instructions 
 
 Navigate through the tabs to access different analyses.
-Utilize dropdowns and buttons to customize your data exploration experience.
-Note: Please ensure your date range selection falls between 2020-01-01 and 2023-10-30 for accurate statistics.
-
-Explore, analyze, and gain valuable insights into the crime landscape of Los Angeles with the Los Angeles Crimes Application!
+you can download the graph in pdf by clicking on the button
 
 ## Contact
 
