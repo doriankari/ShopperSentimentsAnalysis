@@ -53,7 +53,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "map",
         uiOutput("TestMap"),
-        leafletOutput("map")
+        leafletOutput("map"),
       ),
       
       tabItem(
@@ -62,18 +62,21 @@ ui <- dashboardPage(
           tabPanel("Repartition du sentiment", icon = icon("face-grin-stars"),
                    
                    uiOutput("plot1"),
-                   plotOutput("sentiment_rep")
+                   plotOutput("sentiment_rep"),
+                   downloadButton("downloadPlot", "Télécharger")
                    
           ),
           
           tabPanel("Repartition des notes", icon = icon("star-half-stroke"),
                    uiOutput("plot2"),
                    plotOutput("note_rep")
+
                    
           ),
           tabPanel("Repartition des pays", icon = icon("globe"),
                    uiOutput("plot3"),
                    plotOutput("pays_rep")
+
                    
           )
         )
@@ -295,7 +298,12 @@ server <- function(input, output) {
     summary(datatraiter())
   })
   
-  
+  observeEvent(input$downloadPlot, {
+    # Télécharger le graphique en tant qu'image PNG
+    filename <- paste("graphique_", Sys.Date(), ".png", sep = "")
+    ggsave(filename, plot = output$plot1, device = "png")
+  })
+
   
 }
 
