@@ -28,7 +28,7 @@
 
 1. Clone the repo:
    ```sh
-   git clone [https://github.com/doriankari/RshinyApp.git]
+   git clone [(https://github.com/doriankari/ShopperSentimentsAnalysis.git)]
    ```
 2. Download the dataset using this link [TeePublic](https://www.kaggle.com/datasets/nelgiriyewithana/shoppersentiments?resource=download)
 
