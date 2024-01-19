@@ -213,8 +213,8 @@ server <- function(input, output) {
   
   output$plot1 <- renderUI({
     if(input$fichierImport){
-      selectInput("annee", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
-      selectInput("pays", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
+      selectInput("annee1", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
+      selectInput("pays1", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
       
     }
   })
@@ -237,8 +237,8 @@ server <- function(input, output) {
   
   output$plot2 <- renderUI({
     if(input$fichierImport){
-      selectInput("annee", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
-      selectInput("pays", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
+      selectInput("annee2", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
+      selectInput("pays2", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
       
     }
   })
@@ -258,8 +258,8 @@ server <- function(input, output) {
   
   output$plot3 <- renderUI({
     if(input$fichierImport){
-      selectInput("annee", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
-      selectInput("pays", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
+      selectInput("annee3", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
+      selectInput("pays3", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
       
     }
   })
@@ -268,7 +268,7 @@ server <- function(input, output) {
   output$pays_rep <- renderPlot({
     
     #Filtre des ventes sur les USA
-    data <- subset(datatraiter, Pays%in% c("US", "CA", "AU", "GB", "DE"))
+    data <- subset(datatraiter(), Pays%in% c("US", "CA", "AU", "GB", "DE"))
     
     ggplot(data, aes(x = Pays, fill = Pays)) +
       geom_bar() +
