@@ -63,19 +63,25 @@ ui <- dashboardPage(
                    
                    uiOutput("plot1"),
                    plotOutput("sentiment_rep"),
-                   downloadButton("downloadPlot", "Télécharger")
+                   downloadButton("downloadPlot1", "Télécharger en pdf")
                    
           ),
           
           tabPanel("Repartition des notes", icon = icon("star-half-stroke"),
                    uiOutput("plot2"),
-                   plotOutput("note_rep")
+                   plotOutput("note_rep"),
+                   downloadButton("downloadPlot2", "Télécharger en pdf")
 
                    
           ),
           tabPanel("Repartition des pays", icon = icon("globe"),
                    uiOutput("plot3"),
-                   plotOutput("pays_rep")
+                   plotOutput("pays_rep"),
+                   downloadButton("downloadPlot3", "Télécharger en pdf"),
+                   p("Here is the distribution of the number of reviews based on the
+                     top 5 countries with the highest number of reviews and, consequently,
+                     purchases over the past 7 years ", align = "center")
+                   
 
                    
           )
@@ -216,7 +222,7 @@ server <- function(input, output) {
   
   output$plot1 <- renderUI({
     if(input$fichierImport){
-      selectInput("annee1", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
+      #selectInput("annee1", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
       selectInput("pays1", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
       
     }
@@ -240,7 +246,7 @@ server <- function(input, output) {
   
   output$plot2 <- renderUI({
     if(input$fichierImport){
-      selectInput("annee2", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
+      #selectInput("annee2", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
       selectInput("pays2", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
       
     }
@@ -261,8 +267,7 @@ server <- function(input, output) {
   
   output$plot3 <- renderUI({
     if(input$fichierImport){
-      selectInput("annee3", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
-      selectInput("pays3", "Choix des pays", choices = unique(datatraiter()$Pays), multiple = TRUE)
+      #selectInput("annee3", "Année", choices = unique(datatraiter()$Année), multiple = TRUE)
       
     }
   })
@@ -297,13 +302,25 @@ server <- function(input, output) {
   output$SummaryData <- renderPrint({
     summary(datatraiter())
   })
-  
-  observeEvent(input$downloadPlot, {
+  #Téléchargement en fichier pdf
+  observeEvent(input$downloadPlot1, {
     # Télécharger le graphique en tant qu'image PNG
     filename <- paste("graphique_", Sys.Date(), ".png", sep = "")
     ggsave(filename, plot = output$plot1, device = "png")
   })
 
+  observeEvent(input$downloadPlot2, {
+    # Télécharger le graphique en tant qu'image PNG
+    filename <- paste("graphique_", Sys.Date(), ".png", sep = "")
+    ggsave(filename, plot = output$plot2, device = "png")
+  })
+  
+  observeEvent(input$downloadPlot3, {
+    # Télécharger le graphique en tant qu'image PNG
+    filename <- paste("graphique_", Sys.Date(), ".png", sep = "")
+    ggsave(filename, plot = output$plot3, device = "png")
+  })
+  
   
 }
 

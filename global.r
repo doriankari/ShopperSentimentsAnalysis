@@ -45,3 +45,4 @@
 # data$latitude <- as.numeric(data$latitude)
 
 print("global is empty")
+print("please wait for the launch of the app and the data treatement")
